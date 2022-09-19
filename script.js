@@ -1,7 +1,7 @@
 /*  GLOBALS */ 
 
-let GRID_SIZE = prompt("Enter in Size of Grid you want");
-// let GRID_SIZE = 3
+// let GRID_SIZE = prompt("Enter in Size of Grid you want");
+let GRID_SIZE = 3
 let map = [];
 let moveCount = 0; 
 let gameArea = document.querySelector(".game-area")
@@ -9,8 +9,22 @@ let playerTurn = 1;
 let player1DataUrl;
 let player2DataUrl;
 let inputHandler = document.querySelector(".load-file-container")
+let currentTurnTime = 0
+let currentGameTime = 0
+let gameTimeElement = document.querySelector("#current-game-time")
+let turnTimeElement = document.querySelector("#current-turn-time")
 
 
+let currentGameTimeHandler = setInterval(() => {
+    currentGameTime +=1;
+    gameTimeElement.textContent = currentGameTime
+}, 1000);
+
+let currentTurnTimeHandler = setInterval(() => {
+    currentTurnTime +=1;
+    console.log(currentTurnTime)
+    turnTimeElement.textContent = currentTurnTime
+}, 1000);
 
 
 const generateEventListener = (element) => {
@@ -20,12 +34,12 @@ const generateEventListener = (element) => {
             return
              
         }
-        console.log("we clicked a cell")
+       
         // modify background
         if(target.style.backgroundImage === ""){
             
             if(player1DataUrl !== undefined && playerTurn === 1){
-                console.log("i have a picture (p1)")
+                
                 target.style.backgroundImage = `url(${player1DataUrl})`
                 target.style.backgroundSize = "contain"
             }
@@ -79,7 +93,7 @@ const moveValidation = (marker,x,y) =>{
      
     createMap();
     
-     console.log(map)
+     
     for(let i = 0; i < GRID_SIZE; i++){
         if(map[x][i] != marker){
             break;
