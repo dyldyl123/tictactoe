@@ -227,14 +227,14 @@ const resetGame = () => {
  player2DataUrl;
  currentTurnTime = 0
  currentGameTime = 0
-let currentCells = document.querySelector(".cell")
+let currentCells = document.querySelectorAll(".cell")
  for( let button of fileUploadButton){
     button.value = ""
  }
 
  for( let cell of currentCells){
     cell.textContent = ""
-    cell.style.backgroundImage = " "
+    cell.style.backgroundImage = ""
  }
 
 }
