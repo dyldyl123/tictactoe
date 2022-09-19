@@ -1,18 +1,31 @@
-/*  GLOBALS */ 
+/*  Selectors */ 
 
 // let GRID_SIZE = prompt("Enter in Size of Grid you want");
+let currentTurnComplain = document.querySelector("#current-turn-complain")
+let gameArea = document.querySelector(".game-area")
+let inputHandler = document.querySelector(".load-file-container")
+let gameTimeElement = document.querySelector("#current-game-time")
+let turnTimeElement = document.querySelector("#current-turn-time")
+let aiModeFlag = prompt("do you want to play the computer (please enter 1 or 0)")
+let cells = document.querySelectorAll(".cell")
+let resetButton = document.querySelector(".reset")
+let fileUploadButton = document.querySelectorAll(".file-uploader")
+console.log(fileUploadButton)
+/* GLOBALS */
 let GRID_SIZE = 3
+let INTERVAL = 1
 let map = [];
 let moveCount = 0; 
-let gameArea = document.querySelector(".game-area")
 let playerTurn = 1; 
 let player1DataUrl;
 let player2DataUrl;
-let inputHandler = document.querySelector(".load-file-container")
 let currentTurnTime = 0
 let currentGameTime = 0
-let gameTimeElement = document.querySelector("#current-game-time")
-let turnTimeElement = document.querySelector("#current-turn-time")
+
+resetButton.addEventListener("click", () =>{
+    resetGame();
+})
+
 
 
 let currentGameTimeHandler = setInterval(() => {
@@ -22,7 +35,53 @@ let currentGameTimeHandler = setInterval(() => {
 
 let currentTurnTimeHandler = setInterval(() => {
     currentTurnTime +=1;
-    console.log(currentTurnTime)
+    if(currentTurnTime >= INTERVAL){
+        if(aiModeFlag === "1" && playerTurn === 1){
+            return
+        }
+        if(aiModeFlag === "1"){
+            currentTurnComplain.textContent = `AI Took its turn`
+        }else {
+            currentTurnComplain.textContent = `You took too long player ${playerTurn} so we made your turn for you`
+        }
+       
+        
+        let cellArray = [];
+        for( cell of cells){
+            if(cell.textContent === ""){
+                cellArray.push(cell)
+            }
+        }
+        if(cellArray.length === 0){
+            // alert(`game over, game was ${currentGameTime} seconds long`)
+            return
+        }
+        let randomNo = Math.floor(Math.random() * (tempArray.length - 1))
+        // do all the move validation
+        let selectedCell = cellArray[randomNo]
+        selectedCell.textContent = `${playerTurn}`
+        if(selectedCell.style.backgroundImage === ""){
+            
+            if(player1DataUrl !== undefined && playerTurn === 1){
+                
+                selectedCell.style.backgroundImage = `url(${player1DataUrl})`
+                selectedCell.style.backgroundSize = "contain"
+            }
+            else if(player2DataUrl !== undefined && playerTurn === 2){
+                selectedCell.style.backgroundImage = `url(${player2DataUrl})`
+                selectedCell.style.backgroundSize = "contain"
+            }else{
+                selectedCell.style.backgroundImage = `url('src/${playerTurn}.png')`
+            }
+        }    
+        moveCount += 1
+        moveValidation(playerTurn,selectedCell.dataset.column -1,selectedCell.parentElement.dataset.row -1)
+        // change the turn 
+        playerTurn === 1 ? playerTurn = 2 : playerTurn = 1
+        
+        currentTurnTime = 0;
+    }
+    
     turnTimeElement.textContent = currentTurnTime
 }, 1000);
 
@@ -56,7 +115,7 @@ const generateEventListener = (element) => {
             moveValidation(playerTurn,target.dataset.column -1,target.parentElement.dataset.row -1)
         // change the turn 
             playerTurn === 1 ? playerTurn = 2 : playerTurn = 1
-            
+            currentTurnTime = 0
         }
        
     })
@@ -155,6 +214,22 @@ const deployToStorage = () => {
 }
 
 const resetGame = () => {
+ map = [];
+ moveCount = 0; 
+ playerTurn = 1; 
+ player1DataUrl;
+ player2DataUrl;
+ currentTurnTime = 0
+ currentGameTime = 0
+
+ for( let button of fileUploadButton){
+    button.value = ""
+ }
+
+ for( let cell of cells){
+    cell.textContent = ""
+    cell.style.backgroundImage = ""
+ }
 
 }
 let drawGrid = (width, height) =>{
