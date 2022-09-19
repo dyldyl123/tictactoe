@@ -5,6 +5,34 @@ let TILE = localStorage.getItem("Tile")
 let TILE_DEFAULT;
 let map = [];
 let moveCount = 0; 
+let gameArea = document.querySelector(".game-area")
+let playerTurn = 1; 
+
+
+
+
+
+const generateEventListener = (element) => {
+    console.log("generating gameArea event listener")
+    element.addEventListener("click", (event) => {
+        console.log("event")
+        console.log(event.target)
+        let target = event.target
+        if(!target.classList.contains("cell")){
+            return
+             
+        }
+        console.log("we clicked a cell")
+        
+        if(target.style.backgroundImage === ""){
+            target.style.backgroundImage = `url('src/${playerTurn}.png')`
+            playerTurn === 1 ? playerTurn = 2 : playerTurn = 1
+        }
+        
+    })
+}
+
+
 
 
 const makeAMove = (player) => {
@@ -69,6 +97,26 @@ const deployToStorage = () => {
 const resetGame = () => {
 
 }
+let drawGrid = (width, height) =>{
+
+    let grid = '<div id="grid">'
+    let cell_html = ''
+    let i = 0 
+    let j = 0
+
+    for( ; i < width; i++) {
+        cell_html += `<div class="cell" data-column = "${i}" ></div>`;
+    }
+
+    for( ; j < height; j++) {
+        grid += `<div class="row" data-row = "${j}">'` + cell_html + '</div>';
+    }
+
+    grid += '</div>';
+    
+    generateEventListener(gameArea)
+    return grid;
+}
 
 const initializeGame = () => {
     function createMap() {
@@ -93,38 +141,19 @@ const initializeGame = () => {
 
     createMap();
     
-    console.log(map);
+    
+    
+
+    
+
+    gameArea.innerHTML = drawGrid(GRID_SIZE,GRID_SIZE)
 
     
    
 
 }
 
-let drawGrid = (width, height) =>{
 
-    let grid = '<div id="grid">'
-    let cell_html = ''
-    let i = 0 
-    let j = 0
 
-    for( ; i < width; i++) {
-        cell_html += `<div class="cell" data-column = "${i}" ></div>`;
-    }
-
-    for( ; j < height; j++) {
-        grid += `<div class="row" data-row = "${j}">'` + cell_html + '</div>';
-    }
-
-    grid += '</div>';
-
-    return grid;
-}
 
 initializeGame()
-
-let gameArea = document.querySelector(".game-area")
-
-console.log(gameArea)
-
-
-gameArea.innerHTML = drawGrid(GRID_SIZE,GRID_SIZE)
