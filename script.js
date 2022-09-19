@@ -94,25 +94,25 @@ const initializeGame = () => {
     createMap();
     
     console.log(map);
-    console.log(typeof map[1][1])
+
     
    
 
 }
 
-const drawGrid = (width, height) =>{
+let drawGrid = (width, height) =>{
 
-    const grid = '<div id="grid">'
+    let grid = '<div id="grid">'
     let cell_html = ''
     let i = 0 
     let j = 0
 
     for( ; i < width; i++) {
-        cell_html += '<div class="cell"></div>';
+        cell_html += `<div class="cell" data-column = "${i}" ></div>`;
     }
 
     for( ; j < height; j++) {
-        grid += '<div class="row">' + cell_html + '</div>';
+        grid += `<div class="row" data-row = "${j}">'` + cell_html + '</div>';
     }
 
     grid += '</div>';
@@ -121,3 +121,10 @@ const drawGrid = (width, height) =>{
 }
 
 initializeGame()
+
+let gameArea = document.querySelector(".game-area")
+
+console.log(gameArea)
+
+
+gameArea.innerHTML = drawGrid(GRID_SIZE,GRID_SIZE)
