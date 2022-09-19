@@ -1,18 +1,23 @@
 /*  Selectors */ 
 
-// let GRID_SIZE = prompt("Enter in Size of Grid you want");
+
 let currentTurnComplain = document.querySelector("#current-turn-complain")
 let gameArea = document.querySelector(".game-area")
 let inputHandler = document.querySelector(".load-file-container")
 let gameTimeElement = document.querySelector("#current-game-time")
 let turnTimeElement = document.querySelector("#current-turn-time")
-// let aiModeFlag = prompt("do you want to play the computer (please enter 1 or 0)")
-let aiModeFlag = "1"
 let cells = document.querySelectorAll(".cell")
 let resetButton = document.querySelector(".reset")
 let fileUploadButton = document.querySelectorAll(".file-uploader")
-console.log(fileUploadButton)
+let playerOneWinElement = document.querySelector(".player-one-wins")
+let playerTwoWinElement = document.querySelector(".player-two-wins")
+
+
 /* GLOBALS */
+// let aiModeFlag = prompt("do you want to play the computer (please enter 1 or 0)")
+// let GRID_SIZE = prompt("Enter in Size of Grid you want");
+let ls = localStorage
+let aiModeFlag = "1"
 let GRID_SIZE = 3
 let INTERVAL = 1
 let map = [];
@@ -22,6 +27,25 @@ let player1DataUrl;
 let player2DataUrl;
 let currentTurnTime = 0
 let currentGameTime = 0
+let outcome = 0;
+let playerOneWins = 0
+let playerTwoWins = 0
+
+
+/* load from storage */
+if(ls.getItem("playerOneWins")!== undefined){
+    playerOneWins = ls.getItem("playerOneWins")
+    playerOneWinElement.textContent = playerOneWins
+}
+
+if(ls.getItem("playerTwoWins") !== undefined){
+    playerTwoWins = ls.getItem("playerTwoWins")
+    playerTwoWinElement.textContent = playerTwoWins
+}
+
+
+
+
 
 resetButton.addEventListener("click", () =>{
     resetGame();
@@ -30,16 +54,22 @@ resetButton.addEventListener("click", () =>{
 
 
 let currentGameTimeHandler = setInterval(() => {
-    currentGameTime +=1;
-    gameTimeElement.textContent = currentGameTime
+    if(outcome === 0){
+        currentGameTime +=1;
+        gameTimeElement.textContent = currentGameTime
+    }
+   
 }, 1000);
 
 
 
 let currentTurnTimeHandler = setInterval(() => {
+    if(outcome !== 0){
+        return
+    }
     currentTurnTime +=1;
     turnTimeElement.textContent = currentTurnTime
-    if(currentTurnTime >= INTERVAL){ 
+    if(currentTurnTime >= INTERVAL ){ 
         console.log("here")
         if(aiModeFlag === "1" && playerTurn === 1){
             return
@@ -65,6 +95,9 @@ let currentTurnTimeHandler = setInterval(() => {
         let randomNo = Math.floor(Math.random() * (currentCells.length - 1))
         // do all the move validation
         let selectedCell = cellArray[randomNo]
+        console.log(cellArray)
+        console.log(randomNo)
+        console.log(selectedCell)
         selectedCell.textContent = `${playerTurn}`
         if(selectedCell.style.backgroundImage === ""){
             
@@ -81,10 +114,9 @@ let currentTurnTimeHandler = setInterval(() => {
             }
         }    
         moveCount += 1
-        moveValidation(playerTurn,selectedCell.dataset.column -1,selectedCell.parentElement.dataset.row -1)
+            moveValidation(playerTurn,selectedCell.dataset.column -1,selectedCell.parentElement.dataset.row -1)
         // change the turn 
         playerTurn === 1 ? playerTurn = 2 : playerTurn = 1
-        
         currentTurnTime = 0;
     }
     
@@ -165,6 +197,8 @@ const moveValidation = (marker,x,y) =>{
         }
         if(i === GRID_SIZE - 1){
             console.log(`${marker} Win`)
+            outcome = playerTurn
+            completeGame()
         }
     }
     for(let j = 0; j < GRID_SIZE; j++){
@@ -173,6 +207,8 @@ const moveValidation = (marker,x,y) =>{
         }
         if(j === GRID_SIZE -1){
             console.log(`${marker} Win`)
+            outcome = playerTurn
+            completeGame()
         }
     }
     if( x === y){
@@ -182,6 +218,9 @@ const moveValidation = (marker,x,y) =>{
             }
             if(k === GRID_SIZE -1){
                 console.log(`${marker} Win`)
+                outcome = playerTurn
+                completeGame()
+            
             }
         }
     }
@@ -192,11 +231,17 @@ const moveValidation = (marker,x,y) =>{
             }
             if(l === GRID_SIZE -1){
                 console.log(`${marker} Win`)
+                outcome = playerTurn
+                completeGame()
+            
             }
         }
     }
     if(moveCount === (Math.pow(GRID_SIZE, 2) - 1)){
         console.log("Draw Nerds")
+        outcome = 3
+        completeGame()
+            
     }
    
 }
@@ -215,8 +260,8 @@ const uploadTile = (input) => {
     
 }
 
-const deployToStorage = () => {
-
+const deployToStorage = (item,value) => {
+    localStorage.setItem(`${item}`,value)
 }
 
 const resetGame = () => {
@@ -227,6 +272,7 @@ const resetGame = () => {
  player2DataUrl;
  currentTurnTime = 0
  currentGameTime = 0
+ outcome = 0
 let currentCells = document.querySelectorAll(".cell")
  for( let button of fileUploadButton){
     button.value = ""
@@ -276,20 +322,34 @@ const grabDrawnCell = (dColumn,dRow) => {
     return cell[0]
 }
 
-
+const completeGame = () => {
+    console.log("complete game")
+    console.log(outcome)
+    
+    if(outcome === 1){
+        playerOneWins += 1
+        playerOneWinElement.textContent = playerOneWins 
+        deployToStorage("playerOneWins",playerOneWins)
+        // resetGame()
+    }else if(outcome === 2){
+        playerTwoWins += 1
+        playerTwoWinElement.textContent = playerTwoWins
+        deployToStorage("playerTwoWins",playerTwoWins)
+        // resetGame()
+    }else if(outcome === 3){
+        // resetGame()
+    }
+    // TODO : add overlay here 
+}
 
 
  initializeGame()
 
-    inputHandler.addEventListener("input", (event) => {
-        let element = event.target 
-        console.log("element target ")
-        console.log(element)
-        uploadTile(element)
-    } )
+inputHandler.addEventListener("input", (event) => {
+    let element = event.target 
+    uploadTile(element)
+})
 
 
 
 
-// cehck if reload PerformanceNavigationTiming.type
-                
