@@ -1,22 +1,19 @@
 /*  GLOBALS */ 
 
-// let GRID_SIZE = prompt("Enter in Size of Grid you want");
-let GRID_SIZE = 3
-let TILE = localStorage.getItem("Tile")
-let TILE_DEFAULT;
+let GRID_SIZE = prompt("Enter in Size of Grid you want");
+// let GRID_SIZE = 3
 let map = [];
 let moveCount = 0; 
 let gameArea = document.querySelector(".game-area")
 let playerTurn = 1; 
 let player1DataUrl;
 let player2DataUrl;
-
+let inputHandler = document.querySelector(".load-file-container")
 
 
 
 
 const generateEventListener = (element) => {
-    console.log("generating gameArea event listener")
     element.addEventListener("click", (event) => {
         let target = event.target
         if(!target.classList.contains("cell")){
@@ -26,12 +23,15 @@ const generateEventListener = (element) => {
         console.log("we clicked a cell")
         // modify background
         if(target.style.backgroundImage === ""){
-            console.log(player1DataUrl)
+            
             if(player1DataUrl !== undefined && playerTurn === 1){
                 console.log("i have a picture (p1)")
+                target.style.backgroundImage = `url(${player1DataUrl})`
+                target.style.backgroundSize = "contain"
             }
             else if(player2DataUrl !== undefined && playerTurn === 2){
-                console.log("i have a picture (p2)")
+                target.style.backgroundImage = `url(${player2DataUrl})`
+                target.style.backgroundSize = "contain"
             }else{
                 target.style.backgroundImage = `url('src/${playerTurn}.png')`
             }
@@ -76,7 +76,8 @@ const moveValidation = (marker,x,y) =>{
 
    
 
-     createMap();
+     
+    createMap();
     
      console.log(map)
     for(let i = 0; i < GRID_SIZE; i++){
@@ -124,20 +125,13 @@ const moveValidation = (marker,x,y) =>{
 
 const uploadTile = (input) => {
     let file = input.files[0]
-    let reader = new FileReader();
-    reader.readAsDataURL(file)
-    
-    reader.onload = function() {
-        if(input.id === "file-upload-1"){
-                player1DataUrl = reader.result
-                
-        }else{
-                player2DataUrl = reader.result
-            }
-            
-           
+    let reader = window.URL.createObjectURL(file);
+    if(input.id === "file-upload-1"){
+        player1DataUrl = reader
+    }else{
+        player2DataUrl = reader
+        
     }
-    
     
     
 }
@@ -191,12 +185,16 @@ const grabDrawnCell = (dColumn,dRow) => {
 
 
  initializeGame()
-let inputHandler = document.querySelector(".load-file-container")
-inputHandler.addEventListener("input", (event) => {
-let element = event.target 
-uploadTile(element)
-} )
+
+    inputHandler.addEventListener("input", (event) => {
+        let element = event.target 
+        console.log("element target ")
+        console.log(element)
+        uploadTile(element)
+    } )
 
 
 
 
+// cehck if reload PerformanceNavigationTiming.type
+                
