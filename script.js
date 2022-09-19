@@ -327,14 +327,14 @@ const completeGame = () => {
     console.log(outcome)
     
     if(outcome === 1){
-        playerOneWins += 1
-        playerOneWinElement.textContent = playerOneWins 
-        deployToStorage("playerOneWins",playerOneWins)
+        playerOneWins = parseInt(playerOneWins) + 1
+        playerOneWinElement.textContent = parseInt(playerOneWins) 
+        deployToStorage("playerOneWins",parseInt(playerOneWins))
         // resetGame()
     }else if(outcome === 2){
-        playerTwoWins += 1
-        playerTwoWinElement.textContent = playerTwoWins
-        deployToStorage("playerTwoWins",playerTwoWins)
+        playerTwoWins = parseInt(playerTwoWins) + 1
+        playerTwoWinElement.textContent = parseInt(playerTwoWins)
+        deployToStorage("playerTwoWins",parseInt(playerTwoWins))
         // resetGame()
     }else if(outcome === 3){
         // resetGame()
@@ -350,6 +350,4 @@ inputHandler.addEventListener("input", (event) => {
     uploadTile(element)
 })
 
-
-
-
+// deployToStorage("playerOneWins",0)
