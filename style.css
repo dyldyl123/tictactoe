@@ -20,4 +20,9 @@
     /* background-image: url(""); */
 }
 
+#current-turn-time {
+    height: 20px;
+    width: 100px;
+    font-size: 20;
+}
 

@@ -6,7 +6,8 @@ let gameArea = document.querySelector(".game-area")
 let inputHandler = document.querySelector(".load-file-container")
 let gameTimeElement = document.querySelector("#current-game-time")
 let turnTimeElement = document.querySelector("#current-turn-time")
-let aiModeFlag = prompt("do you want to play the computer (please enter 1 or 0)")
+// let aiModeFlag = prompt("do you want to play the computer (please enter 1 or 0)")
+let aiModeFlag = "1"
 let cells = document.querySelectorAll(".cell")
 let resetButton = document.querySelector(".reset")
 let fileUploadButton = document.querySelectorAll(".file-uploader")
@@ -33,9 +34,13 @@ let currentGameTimeHandler = setInterval(() => {
     gameTimeElement.textContent = currentGameTime
 }, 1000);
 
+
+
 let currentTurnTimeHandler = setInterval(() => {
     currentTurnTime +=1;
-    if(currentTurnTime >= INTERVAL){
+    turnTimeElement.textContent = currentTurnTime
+    if(currentTurnTime >= INTERVAL){ 
+        console.log("here")
         if(aiModeFlag === "1" && playerTurn === 1){
             return
         }
@@ -45,9 +50,10 @@ let currentTurnTimeHandler = setInterval(() => {
             currentTurnComplain.textContent = `You took too long player ${playerTurn} so we made your turn for you`
         }
        
+        let currentCells = document.querySelectorAll(".cell")
         
         let cellArray = [];
-        for( cell of cells){
+        for( let cell of currentCells){
             if(cell.textContent === ""){
                 cellArray.push(cell)
             }
@@ -56,7 +62,7 @@ let currentTurnTimeHandler = setInterval(() => {
             // alert(`game over, game was ${currentGameTime} seconds long`)
             return
         }
-        let randomNo = Math.floor(Math.random() * (tempArray.length - 1))
+        let randomNo = Math.floor(Math.random() * (currentCells.length - 1))
         // do all the move validation
         let selectedCell = cellArray[randomNo]
         selectedCell.textContent = `${playerTurn}`
@@ -82,7 +88,7 @@ let currentTurnTimeHandler = setInterval(() => {
         currentTurnTime = 0;
     }
     
-    turnTimeElement.textContent = currentTurnTime
+    
 }, 1000);
 
 
@@ -221,14 +227,14 @@ const resetGame = () => {
  player2DataUrl;
  currentTurnTime = 0
  currentGameTime = 0
-
+let currentCells = document.querySelector(".cell")
  for( let button of fileUploadButton){
     button.value = ""
  }
 
- for( let cell of cells){
+ for( let cell of currentCells){
     cell.textContent = ""
-    cell.style.backgroundImage = ""
+    cell.style.backgroundImage = " "
  }
 
 }
