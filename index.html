@@ -9,33 +9,75 @@
 <title>Tic Tac Toe</title>
 </head>
 <body>
+
+    <nav class = "nav-bar">
+        <span></span>
+        <div class = "player">
+            <a>Player One Wins:</a><div class = "player-one-wins win-counter">0</div>
+        </div>
+        <div class = "player">
+        <a>Player Two Wins:</a><div class = "player-two-wins win-counter">0</div>
+        </div>
+        <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+    </nav>
     <div class = "game-area" ></div>
-
-    <div class = "load-file-container">
-        <label for="file-upload" class="custom-file-upload">
-        Player 1 Tile
-        </label>
-        <input id="file-upload-1" type="file" class = "file-uploader"/>
-
-        <label for="file-upload" class="custom-file-upload">
-        Player 2 Tile
-        </label>
-        <input id="file-upload-2" type="file" class = "file-uploader"/>
-
+    
+   
+    <div class = "stat-container">
+        <div id = 'current-game-time-label'>Current Game Time</div>
+        <div id = "current-game-time"></div>
+        <div></div>
+        <br>
+        <label id = "current-turn-complain"></label>
+        <br>
+        <a>Current Turn Time:</a>
+        <div id = "current-turn-time"></div>
     </div>
+    
 
-    <div id = "current-game-time"></div>
-    <div></div>
-    <br>
-    <label id = "current-turn-complain"></label>
-    <br>
-    <div id = "current-turn-time"></div>
     <div></div>
 
     <br>
     <button class = "reset">RESET</button>
     <br>
-    <a>Player One Wins:</a><div class = "player-one-wins win-counter">0</div>
-    <a>Player Two Wins:</a><div class = "player-two-wins win-counter">0</div>
+    
+  
+   
+
+
+    <!-- side nav -->
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    
+        <span>Want to play AI?</span>
+        <br>
+        <label class="switch">
+            
+            <input type="checkbox" id = "aiflag">
+            <span class="slider"></span>
+        </label>
+        <br>
+        <span>Want to Do other thing?</span>
+        <br>
+        <label class="switch">
+            <input type="checkbox" id = "other">
+            <span class="slider"></span>
+        </label>
+        
+
+        <div class = "load-file-container">
+            <div class = "profile-image" id = "player-one-profile">Player 1 : </div>
+            <label for="file-upload-1" class="custom-file-upload">
+            
+            </label>
+            <input id="file-upload-1" type="file" class = "file-uploader"/>
+            <div class = "profile-image" id = "player-two-profile">Player 2: </div>
+            <label for="file-upload-2" class="custom-file-upload">
+           
+            </label>
+            <input id="file-upload-2" type="file" class = "file-uploader"/>
+    
+        </div>
+      </div>
 </body>
 </html>

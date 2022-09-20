@@ -11,14 +11,15 @@ let resetButton = document.querySelector(".reset")
 let fileUploadButton = document.querySelectorAll(".file-uploader")
 let playerOneWinElement = document.querySelector(".player-one-wins")
 let playerTwoWinElement = document.querySelector(".player-two-wins")
-
+let sl = document.querySelector(".switch") 
+let p1image = document.querySelector("#player-one-profile") 
+let p2image = document.querySelector("#player-two-profile")
 
 /* GLOBALS */
-// let aiModeFlag = prompt("do you want to play the computer (please enter 1 or 0)")
-// let GRID_SIZE = prompt("Enter in Size of Grid you want");
+
 let ls = localStorage
-let aiModeFlag = "1"
-let GRID_SIZE = 3
+let aiModeFlag = "2"
+let GRID_SIZE = 5
 let INTERVAL = 1
 let map = [];
 let moveCount = 0; 
@@ -45,6 +46,17 @@ if(ls.getItem("playerTwoWins") !== undefined){
 
 
 
+sl.addEventListener("click", (event) =>{
+    console.log(event.target.checked)
+    console.log(event.target.id)
+    if(event.target.checked){
+        aiModeFlag = "1"
+    } else { 
+        aiModeFlag = "0" 
+    }
+    console.log(aiModeFlag)
+})
+
 
 
 resetButton.addEventListener("click", () =>{
@@ -70,7 +82,9 @@ let currentTurnTimeHandler = setInterval(() => {
     currentTurnTime +=1;
     turnTimeElement.textContent = currentTurnTime
     if(currentTurnTime >= INTERVAL ){ 
-        console.log("here")
+        if(aiModeFlag === "2"){
+            return
+        }
         if(aiModeFlag === "1" && playerTurn === 1){
             return
         }
@@ -131,14 +145,17 @@ const generateEventListener = (element) => {
             return
              
         }
-       
+       if(outcome !== 0){
+        return
+       }
         // modify background
         if(target.style.backgroundImage === ""){
             
-            if(player1DataUrl !== undefined && playerTurn === 1){
+            if(player1DataUrl !== undefined  && playerTurn === 1){
                 
                 target.style.backgroundImage = `url(${player1DataUrl})`
                 target.style.backgroundSize = "contain"
+                
             }
             else if(player2DataUrl !== undefined && playerTurn === 2){
                 target.style.backgroundImage = `url(${player2DataUrl})`
@@ -199,6 +216,7 @@ const moveValidation = (marker,x,y) =>{
             console.log(`${marker} Win`)
             outcome = playerTurn
             completeGame()
+            return
         }
     }
     for(let j = 0; j < GRID_SIZE; j++){
@@ -209,6 +227,7 @@ const moveValidation = (marker,x,y) =>{
             console.log(`${marker} Win`)
             outcome = playerTurn
             completeGame()
+            return
         }
     }
     if( x === y){
@@ -220,6 +239,7 @@ const moveValidation = (marker,x,y) =>{
                 console.log(`${marker} Win`)
                 outcome = playerTurn
                 completeGame()
+                return
             
             }
         }
@@ -233,6 +253,7 @@ const moveValidation = (marker,x,y) =>{
                 console.log(`${marker} Win`)
                 outcome = playerTurn
                 completeGame()
+                return
             
             }
         }
@@ -241,6 +262,7 @@ const moveValidation = (marker,x,y) =>{
         console.log("Draw Nerds")
         outcome = 3
         completeGame()
+        return
             
     }
    
@@ -252,8 +274,12 @@ const uploadTile = (input) => {
     let reader = window.URL.createObjectURL(file);
     if(input.id === "file-upload-1"){
         player1DataUrl = reader
+        console.log(p1image)
+        p1image.style.backgroundImage = `url(${player1DataUrl})`
+        console.log(p1image.style.backgroundImage)
     }else{
         player2DataUrl = reader
+        p2image.style.backgroundImage = `url(${player1DataUrl})`
         
     }
     
@@ -310,8 +336,60 @@ const initializeGame = () => {
 
 
     gameArea.innerHTML = drawGrid(GRID_SIZE,GRID_SIZE)
+    /* adjust cell size based on GRID_SIZE */
+    let GRID_RATIO = 60/GRID_SIZE
+    let drawnCells = document.querySelectorAll(".cell")
+    for(let cell of drawnCells){
+    cell.style.width =  `${GRID_RATIO}vh`
+    cell.style.height = `${GRID_RATIO}vh`
+    }
+    /* adjust borders based on GRID_SIZE */
+    let corner1 = grabDrawnCell(1,1)
+    let corner2 = grabDrawnCell(1,GRID_SIZE)
+    let corner3 = grabDrawnCell(GRID_SIZE,1)
+    let corner4 = grabDrawnCell(GRID_SIZE,GRID_SIZE)
+    for(let temp=2;temp<=(GRID_SIZE -1);temp++){
 
+        let grabbedCell = grabDrawnCell(1,temp)
+        
+        grabbedCell.style.borderLeft = '0'
+        
+    }
+    for(let temp=2;temp<=(GRID_SIZE -1);temp++){
+        
+        let grabbedCell = grabDrawnCell(temp,1)
+        
+        grabbedCell.style.borderTop = '0'
+        
+    }
+    for(let temp=2;temp<=(GRID_SIZE -1);temp++){
+        
+        let grabbedCell = grabDrawnCell(GRID_SIZE,temp)
+        
+        grabbedCell.style.borderRight = '0'
+        
+    }
+    for(let temp=2;temp<=(GRID_SIZE -1);temp++){
+        
+        let grabbedCell = grabDrawnCell(temp,GRID_SIZE)
+        
+        grabbedCell.style.borderBottom = '0'
+        
+    }
+
+    
+    corner1.style.borderTop = '0'
+    corner1.style.borderLeft = '0'
+    corner2.style.borderBottom = '0'
+    corner2.style.borderLeft = '0'
+    corner3.style.borderTop = '0'
+    corner3.style.borderRight = '0'
+    corner4.style.borderBottom = '0'
+    corner4.style.borderRight = '0'
+   
 }
+
+
 
 
 const grabDrawnCell = (dColumn,dRow) => {
@@ -351,3 +429,16 @@ inputHandler.addEventListener("input", (event) => {
 })
 
 // deployToStorage("playerOneWins",0)
+
+
+/* Set the width of the side navigation to 250px */
+function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+  }
+  
+  /* Set the width of the side navigation to 0 */
+  function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+  }
+
+
