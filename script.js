@@ -471,7 +471,7 @@ const reverseOverlay = () => {
 
 const moveGameForward = (element) => {
     element.textContent = `${playerTurn}`
-        if(element.style.backgroundImage === ""){
+        if(element.style.backgroundImage === "" || element.style.backgroundImage === "none"){
             
             if(player1DataUrl !== undefined && playerTurn === 1){
                 
