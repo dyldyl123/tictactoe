@@ -15,7 +15,7 @@ let sl = document.querySelector(".switch")
 let p1image = document.querySelector("#player-one-profile") 
 let p2image = document.querySelector("#player-two-profile")
 let rangeSlider = document.querySelector("#range-slider")
-console.log(rangeSlider.value)
+
 
 /* GLOBALS */
 
@@ -35,20 +35,12 @@ let playerOneWins = 0
 let playerTwoWins = 0
 
 
-/* load from storage */
-if(ls.getItem("playerOneWins")!== undefined){
-    playerOneWins = ls.getItem("playerOneWins")
-    playerOneWinElement.textContent = playerOneWins
-}
 
-if(ls.getItem("playerTwoWins") !== undefined){
-    playerTwoWins = ls.getItem("playerTwoWins")
-    playerTwoWinElement.textContent = playerTwoWins
-}
-
+/* event listeners*/
 rangeSlider.addEventListener("input", (event) =>{
     GRID_SIZE = event.target.value
     initializeGame()
+    resetGame()
 })
 
 sl.addEventListener("click", (event) =>{
@@ -62,13 +54,56 @@ sl.addEventListener("click", (event) =>{
     resetGame()
 })
 
+const generateEventListener = (element) => {
+    element.addEventListener("click", (event) => {
+        let target = event.target
+        if(!target.classList.contains("cell")){
+            return
+             
+        }
+       if(outcome !== 0){
+        return
+       }
+        // modify background
+        if(target.style.backgroundImage === ""){
+            
+            if(player1DataUrl !== undefined  && playerTurn === 1){
+                
+                target.style.backgroundImage = `url(${player1DataUrl})`
+                target.style.backgroundSize = "contain"
+                
+            }
+            else if(player2DataUrl !== undefined && playerTurn === 2){
+                target.style.backgroundImage = `url(${player2DataUrl})`
+                target.style.backgroundSize = "contain"
+            }else{
+                target.style.backgroundImage = `url('src/${playerTurn}.png')`
+            }
+            
+            target.textContent = `${playerTurn}`
+            moveCount += 1
+             // call moveValidation passing in targets dataset attributes    
+            moveValidation(playerTurn,target.dataset.column -1,target.parentElement.dataset.row -1)
+        // change the turn 
+            playerTurn === 1 ? playerTurn = 2 : playerTurn = 1
+            currentTurnTime = 0
+        }
+       
+    })
+}
 
 
 resetButton.addEventListener("click", () =>{
     resetGame();
 })
 
+inputHandler.addEventListener("input", (event) => {
+    let element = event.target 
+    uploadTile(element)
+})
 
+
+/* time handlers */
 
 let currentGameTimeHandler = setInterval(() => {
     if(outcome === 0){
@@ -145,48 +180,110 @@ let currentTurnTimeHandler = setInterval(() => {
 }, 1000);
 
 
-const generateEventListener = (element) => {
-    element.addEventListener("click", (event) => {
-        let target = event.target
-        if(!target.classList.contains("cell")){
-            return
-             
-        }
-       if(outcome !== 0){
-        return
-       }
-        // modify background
-        if(target.style.backgroundImage === ""){
-            
-            if(player1DataUrl !== undefined  && playerTurn === 1){
-                
-                target.style.backgroundImage = `url(${player1DataUrl})`
-                target.style.backgroundSize = "contain"
-                
-            }
-            else if(player2DataUrl !== undefined && playerTurn === 2){
-                target.style.backgroundImage = `url(${player2DataUrl})`
-                target.style.backgroundSize = "contain"
-            }else{
-                target.style.backgroundImage = `url('src/${playerTurn}.png')`
-            }
-            
-            target.textContent = `${playerTurn}`
-            moveCount += 1
-             // call moveValidation passing in targets dataset attributes    
-            moveValidation(playerTurn,target.dataset.column -1,target.parentElement.dataset.row -1)
-        // change the turn 
-            playerTurn === 1 ? playerTurn = 2 : playerTurn = 1
-            currentTurnTime = 0
-        }
-       
-    })
+
+/* starting the game*/
+
+/* load from storage */
+if(ls.getItem("playerOneWins")!== undefined){
+    playerOneWins = ls.getItem("playerOneWins")
+    playerOneWinElement.textContent = playerOneWins
+}
+
+if(ls.getItem("playerTwoWins") !== undefined){
+    playerTwoWins = ls.getItem("playerTwoWins")
+    playerTwoWinElement.textContent = playerTwoWins
 }
 
 
+const initializeGame = () => {
 
 
+    gameArea.innerHTML = drawGrid(GRID_SIZE,GRID_SIZE)
+    /* adjust cell size based on GRID_SIZE */
+    let GRID_RATIO = 60/GRID_SIZE
+    let drawnCells = document.querySelectorAll(".cell")
+    for(let cell of drawnCells){
+    cell.style.width =  `${GRID_RATIO}vh`
+    cell.style.height = `${GRID_RATIO}vh`
+    }
+    /* adjust borders based on GRID_SIZE */
+    let corner1 = grabDrawnCell(1,1)
+    let corner2 = grabDrawnCell(1,GRID_SIZE)
+    let corner3 = grabDrawnCell(GRID_SIZE,1)
+    let corner4 = grabDrawnCell(GRID_SIZE,GRID_SIZE)
+    for(let temp=2;temp<=(GRID_SIZE -1);temp++){
 
+        let grabbedCell = grabDrawnCell(1,temp)
+        
+        grabbedCell.style.borderLeft = '0'
+        
+    }
+    for(let temp=2;temp<=(GRID_SIZE -1);temp++){
+        
+        let grabbedCell = grabDrawnCell(temp,1)
+        
+        grabbedCell.style.borderTop = '0'
+        
+    }
+    for(let temp=2;temp<=(GRID_SIZE -1);temp++){
+        
+        let grabbedCell = grabDrawnCell(GRID_SIZE,temp)
+        
+        grabbedCell.style.borderRight = '0'
+        
+    }
+    for(let temp=2;temp<=(GRID_SIZE -1);temp++){
+        
+        let grabbedCell = grabDrawnCell(temp,GRID_SIZE)
+        
+        grabbedCell.style.borderBottom = '0'
+        
+    }
+
+    
+    corner1.style.borderTop = '0'
+    corner1.style.borderLeft = '0'
+    corner2.style.borderBottom = '0'
+    corner2.style.borderLeft = '0'
+    corner3.style.borderTop = '0'
+    corner3.style.borderRight = '0'
+    corner4.style.borderBottom = '0'
+    corner4.style.borderRight = '0'
+   
+}
+
+let drawGrid = (width, height) =>{
+
+    let grid = '<div id="grid">'
+    let cell_html = ''
+    let i = 0 
+    let j = 0
+
+    for( ; i < width; i++) {
+        cell_html += `<div class="cell" data-column = "${i+1}" ></div>`;
+    }
+
+    for( ; j < height; j++) {
+        grid += `<div class="row" data-row = "${j+1}">'` + cell_html + '</div>';
+    }
+
+    grid += '</div>';
+    
+    generateEventListener(gameArea)
+
+    return grid;
+}
+
+const grabDrawnCell = (dColumn,dRow) => {
+    let cellColumn = document.querySelectorAll(`[data-column="${dColumn}"]`)
+
+    let cellColumnArray = Array.from(cellColumn)
+    let cell = cellColumnArray.filter(element => element.parentElement.dataset.row === `${dRow}`)
+    return cell[0]
+}
+
+
+/* playing the game */
 
 const moveValidation = (marker,x,y) =>{
 
@@ -275,7 +372,29 @@ const moveValidation = (marker,x,y) =>{
    
 }
 
+const completeGame = () => {
+    console.log("complete game")
+    console.log(outcome)
+    
+    if(outcome === 1){
+        playerOneWins = parseInt(playerOneWins) + 1
+        playerOneWinElement.textContent = parseInt(playerOneWins) 
+        deployToStorage("playerOneWins",parseInt(playerOneWins))
+        popUpOverlay()
+    }else if(outcome === 2){
+        playerTwoWins = parseInt(playerTwoWins) + 1
+        playerTwoWinElement.textContent = parseInt(playerTwoWins)
+        deployToStorage("playerTwoWins",parseInt(playerTwoWins))
+        popUpOverlay()
+    }else if(outcome === 3){
+        popUpOverlay()
+    }
+    
+}
 
+
+
+/* additional functionality */
 const uploadTile = (input) => {
     let file = input.files[0]
     let reader = window.URL.createObjectURL(file);
@@ -317,134 +436,14 @@ let currentCells = document.querySelectorAll(".cell")
  }
  reverseOverlay()
 }
-let drawGrid = (width, height) =>{
 
-    let grid = '<div id="grid">'
-    let cell_html = ''
-    let i = 0 
-    let j = 0
+ /* css manipulation functions */
 
-    for( ; i < width; i++) {
-        cell_html += `<div class="cell" data-column = "${i+1}" ></div>`;
-    }
-
-    for( ; j < height; j++) {
-        grid += `<div class="row" data-row = "${j+1}">'` + cell_html + '</div>';
-    }
-
-    grid += '</div>';
-    
-    generateEventListener(gameArea)
-
-    return grid;
-}
-
-const initializeGame = () => {
-
-
-    gameArea.innerHTML = drawGrid(GRID_SIZE,GRID_SIZE)
-    /* adjust cell size based on GRID_SIZE */
-    let GRID_RATIO = 60/GRID_SIZE
-    let drawnCells = document.querySelectorAll(".cell")
-    for(let cell of drawnCells){
-    cell.style.width =  `${GRID_RATIO}vh`
-    cell.style.height = `${GRID_RATIO}vh`
-    }
-    /* adjust borders based on GRID_SIZE */
-    let corner1 = grabDrawnCell(1,1)
-    let corner2 = grabDrawnCell(1,GRID_SIZE)
-    let corner3 = grabDrawnCell(GRID_SIZE,1)
-    let corner4 = grabDrawnCell(GRID_SIZE,GRID_SIZE)
-    for(let temp=2;temp<=(GRID_SIZE -1);temp++){
-
-        let grabbedCell = grabDrawnCell(1,temp)
-        
-        grabbedCell.style.borderLeft = '0'
-        
-    }
-    for(let temp=2;temp<=(GRID_SIZE -1);temp++){
-        
-        let grabbedCell = grabDrawnCell(temp,1)
-        
-        grabbedCell.style.borderTop = '0'
-        
-    }
-    for(let temp=2;temp<=(GRID_SIZE -1);temp++){
-        
-        let grabbedCell = grabDrawnCell(GRID_SIZE,temp)
-        
-        grabbedCell.style.borderRight = '0'
-        
-    }
-    for(let temp=2;temp<=(GRID_SIZE -1);temp++){
-        
-        let grabbedCell = grabDrawnCell(temp,GRID_SIZE)
-        
-        grabbedCell.style.borderBottom = '0'
-        
-    }
-
-    
-    corner1.style.borderTop = '0'
-    corner1.style.borderLeft = '0'
-    corner2.style.borderBottom = '0'
-    corner2.style.borderLeft = '0'
-    corner3.style.borderTop = '0'
-    corner3.style.borderRight = '0'
-    corner4.style.borderBottom = '0'
-    corner4.style.borderRight = '0'
-   
-}
-
-
-
-
-const grabDrawnCell = (dColumn,dRow) => {
-    let cellColumn = document.querySelectorAll(`[data-column="${dColumn}"]`)
-
-    let cellColumnArray = Array.from(cellColumn)
-    let cell = cellColumnArray.filter(element => element.parentElement.dataset.row === `${dRow}`)
-    return cell[0]
-}
-
-const completeGame = () => {
-    console.log("complete game")
-    console.log(outcome)
-    
-    if(outcome === 1){
-        playerOneWins = parseInt(playerOneWins) + 1
-        playerOneWinElement.textContent = parseInt(playerOneWins) 
-        deployToStorage("playerOneWins",parseInt(playerOneWins))
-        popUpOverlay()
-    }else if(outcome === 2){
-        playerTwoWins = parseInt(playerTwoWins) + 1
-        playerTwoWinElement.textContent = parseInt(playerTwoWins)
-        deployToStorage("playerTwoWins",parseInt(playerTwoWins))
-        popUpOverlay()
-    }else if(outcome === 3){
-        popUpOverlay()
-    }
-    
-}
-
-
-initializeGame()
-
-inputHandler.addEventListener("input", (event) => {
-    let element = event.target 
-    uploadTile(element)
-})
-
-//  deployToStorage("playerOneWins",0)
-//  deployToStorage("playerTwoWins",0)
-
-
-/* Set the width of the side navigation to 250px */
-function openNav() {
+ function openNav() {
     document.getElementById("mySidenav").style.width = "250px";
   }
   
-  /* Set the width of the side navigation to 0 */
+ 
 function closeNav() {
     document.getElementById("mySidenav").style.width = "0";
 }
@@ -469,3 +468,14 @@ const reverseOverlay = () => {
     winningTextElement.style.zIndex = "-10"
     winningTextElement.style.fontSize = "0"
 }
+
+
+
+
+
+initializeGame()
+
+
+//  deployToStorage("playerOneWins",0)
+//  deployToStorage("playerTwoWins",0)
+
