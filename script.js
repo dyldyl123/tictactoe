@@ -33,6 +33,7 @@ let currentGameTime = 0
 let outcome = 0;
 let playerOneWins = 0
 let playerTwoWins = 0
+let dragged = null
 
 
 
@@ -41,6 +42,7 @@ rangeSlider.addEventListener("input", (event) =>{
     GRID_SIZE = event.target.value
     initializeGame()
     resetGame()
+    addDragListener()
 })
 
 sl.addEventListener("click", (event) =>{
@@ -64,31 +66,31 @@ const generateEventListener = (element) => {
        if(outcome !== 0){
         return
        }
-        // modify background
-        if(target.style.backgroundImage === ""){
+        // // modify background
+        // if(target.style.backgroundImage === ""){
             
-            if(player1DataUrl !== undefined  && playerTurn === 1){
+        //     if(player1DataUrl !== undefined  && playerTurn === 1){
                 
-                target.style.backgroundImage = `url(${player1DataUrl})`
-                target.style.backgroundSize = "contain"
+        //         target.style.backgroundImage = `url(${player1DataUrl})`
+        //         target.style.backgroundSize = "contain"
                 
-            }
-            else if(player2DataUrl !== undefined && playerTurn === 2){
-                target.style.backgroundImage = `url(${player2DataUrl})`
-                target.style.backgroundSize = "contain"
-            }else{
-                target.style.backgroundImage = `url('src/${playerTurn}.png')`
-            }
+        //     }
+        //     else if(player2DataUrl !== undefined && playerTurn === 2){
+        //         target.style.backgroundImage = `url(${player2DataUrl})`
+        //         target.style.backgroundSize = "contain"
+        //     }else{
+        //         target.style.backgroundImage = `url('src/${playerTurn}.png')`
+        //     }
             
-            target.textContent = `${playerTurn}`
-            moveCount += 1
-             // call moveValidation passing in targets dataset attributes    
-            moveValidation(playerTurn,target.dataset.column -1,target.parentElement.dataset.row -1)
-        // change the turn 
-            playerTurn === 1 ? playerTurn = 2 : playerTurn = 1
-            currentTurnTime = 0
-        }
-       
+        //     target.textContent = `${playerTurn}`
+        //     moveCount += 1
+        //      // call moveValidation passing in targets dataset attributes    
+        //     moveValidation(playerTurn,target.dataset.column -1,target.parentElement.dataset.row -1)
+        // // change the turn 
+        //     playerTurn === 1 ? playerTurn = 2 : playerTurn = 1
+        //     currentTurnTime = 0
+        // }
+       moveGameForward(target)
     })
 }
 
@@ -145,35 +147,32 @@ let currentTurnTimeHandler = setInterval(() => {
             }
         }
         if(cellArray.length === 0){
-            // alert(`game over, game was ${currentGameTime} seconds long`)
+            
             return
         }
         let randomNo = Math.floor(Math.random() * (currentCells.length - 1))
-        // do all the move validation
         let selectedCell = cellArray[randomNo]
-        console.log(cellArray)
-        console.log(randomNo)
-        console.log(selectedCell)
-        selectedCell.textContent = `${playerTurn}`
-        if(selectedCell.style.backgroundImage === ""){
+        moveGameForward(selectedCell)
+        // selectedCell.textContent = `${playerTurn}`
+        // if(selectedCell.style.backgroundImage === ""){
             
-            if(player1DataUrl !== undefined && playerTurn === 1){
+        //     if(player1DataUrl !== undefined && playerTurn === 1){
                 
-                selectedCell.style.backgroundImage = `url(${player1DataUrl})`
-                selectedCell.style.backgroundSize = "contain"
-            }
-            else if(player2DataUrl !== undefined && playerTurn === 2){
-                selectedCell.style.backgroundImage = `url(${player2DataUrl})`
-                selectedCell.style.backgroundSize = "contain"
-            }else{
-                selectedCell.style.backgroundImage = `url('src/${playerTurn}.png')`
-            }
-        }    
-        moveCount += 1
-            moveValidation(playerTurn,selectedCell.dataset.column -1,selectedCell.parentElement.dataset.row -1)
-        // change the turn 
-        playerTurn === 1 ? playerTurn = 2 : playerTurn = 1
-        currentTurnTime = 0;
+        //         selectedCell.style.backgroundImage = `url(${player1DataUrl})`
+        //         selectedCell.style.backgroundSize = "contain"
+        //     }
+        //     else if(player2DataUrl !== undefined && playerTurn === 2){
+        //         selectedCell.style.backgroundImage = `url(${player2DataUrl})`
+        //         selectedCell.style.backgroundSize = "contain"
+        //     }else{
+        //         selectedCell.style.backgroundImage = `url('src/${playerTurn}.png')`
+        //     }
+        // }    
+        // moveCount += 1
+        //     moveValidation(playerTurn,selectedCell.dataset.column -1,selectedCell.parentElement.dataset.row -1)
+        // // change the turn 
+        // playerTurn === 1 ? playerTurn = 2 : playerTurn = 1
+        // currentTurnTime = 0;
     }
     
     
@@ -269,7 +268,7 @@ let drawGrid = (width, height) =>{
 
     grid += '</div>';
     
-    generateEventListener(gameArea)
+    
 
     return grid;
 }
@@ -362,6 +361,7 @@ const moveValidation = (marker,x,y) =>{
             }
         }
     }
+    
     if(moveCount === (Math.pow(GRID_SIZE, 2))){
         console.log("Draw Nerds")
         outcome = 3
@@ -469,42 +469,66 @@ const reverseOverlay = () => {
     winningTextElement.style.fontSize = "0"
 }
 
+const moveGameForward = (element) => {
+    element.textContent = `${playerTurn}`
+        if(element.style.backgroundImage === ""){
+            
+            if(player1DataUrl !== undefined && playerTurn === 1){
+                
+                element.style.backgroundImage = `url(${player1DataUrl})`
+                
+            }
+            else if(player2DataUrl !== undefined && playerTurn === 2){
+                element.style.backgroundImage = `url(${player2DataUrl})`
+                
+            }else{
+                element.style.backgroundImage = `url('src/${playerTurn}.png')`
+            }
+        }    
+        moveCount += 1
+        moveValidation(playerTurn,element.dataset.column -1,element.parentElement.dataset.row -1)
+        // change the turn 
+        playerTurn === 1 ? playerTurn = 2 : playerTurn = 1
+        currentTurnTime = 0;
+        console.log(moveCount)
 
+}
 
-
-
-initializeGame()
-
-
-//  deployToStorage("playerOneWins",0)
-//  deployToStorage("playerTwoWins",0)
-let dragged = null
-let temp = document.querySelectorAll(".cell")
-
-for(thing of temp){
-    thing.addEventListener("dragover",(event) =>{
-        event.preventDefault()
-    })
-    thing.addEventListener("dragstart", (event) =>{
-        dragged = event.target
-    })
-    thing.addEventListener("drop", (event) => {
-        if( event.target !== dragged){
+const addDragListener = () =>{
+    let temp = document.querySelectorAll(".cell")
+    console.log(temp)
+    for(thing of temp){
+        thing.addEventListener("dragover",(event) =>{
+            event.preventDefault()
+        })
+        thing.addEventListener("dragstart", (event) =>{
+            dragged = event.target
+        })
+        thing.addEventListener("drop", (event) => {
+            if( event.target !== dragged && event.target.textContent !== dragged.textContent){
            
-            let sourceStyle = window.getComputedStyle(dragged)
-            let targetStyle = window.getComputedStyle(event.target)
-            let targetIntermediateStyle = handleSwapStyle(["background-color","border-left-width","border-right-width","border-top-width","border-bottom-width"],sourceStyle,targetStyle)
-            let sourceIntermediateStyle = handleSwapStyle(["border-left-width","border-right-width","border-top-width","border-bottom-width"],targetStyle,sourceStyle)
-            event.target.style.cssText = targetIntermediateStyle
-            dragged.style.cssText = sourceIntermediateStyle
+                let sourceStyle = window.getComputedStyle(dragged)
+                let targetStyle = window.getComputedStyle(event.target)
+                let targetIntermediateStyle = handleSwapStyle(["background-color","border-left-width","border-right-width","border-top-width","border-bottom-width"],sourceStyle,targetStyle)
+                let sourceIntermediateStyle = handleSwapStyle(["border-left-width","border-right-width","border-top-width","border-bottom-width"],targetStyle,sourceStyle)
+                let sourceTextContent  = dragged.textContent
+                let targetTextContent = event.target.textContent
+                event.target.style.cssText = targetIntermediateStyle
+                dragged.style.cssText = sourceIntermediateStyle
+                event.target.textContent = sourceTextContent
+                dragged.textContent = targetTextContent
            
             
             
             // todo: call move validation / change turn logic
-        }
-    })
+                moveCount += 1
+                moveValidation(playerTurn,event.target.dataset.column -1,event.target.parentElement.dataset.row -1)
+                playerTurn === 1 ? playerTurn = 2 : playerTurn = 1
+                currentTurnTime = 0;
+           }
+        })
+    }
 }
-
 const handleSwapStyle = (filterArray,sourceItem,targetItem) => {
     let filteredStyleString = ""
     let initialStyleArray = Array.from(sourceItem)
@@ -522,5 +546,13 @@ const handleSwapStyle = (filterArray,sourceItem,targetItem) => {
     return outputString + filteredStyleString 
 }
     
+
+
+initializeGame()
+generateEventListener(gameArea)
+addDragListener()
+
+//  deployToStorage("playerOneWins",0)
+//  deployToStorage("playerTwoWins",0)
 
 

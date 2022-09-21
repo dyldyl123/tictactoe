@@ -19,7 +19,8 @@
     height: 15vh;
     width: 15vh;
     background-size: cover;
-    font-size: 0;
+    /* font-size: 0; */
+    color: white;
     background-repeat: no-repeat;
 }
 
