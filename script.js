@@ -260,7 +260,7 @@ let drawGrid = (width, height) =>{
     let j = 0
 
     for( ; i < width; i++) {
-        cell_html += `<div class="cell" data-column = "${i+1}" ></div>`;
+        cell_html += `<div class="cell" draggable = "true" data-column = "${i+1}" ></div>`;
     }
 
     for( ; j < height; j++) {
@@ -478,4 +478,49 @@ initializeGame()
 
 //  deployToStorage("playerOneWins",0)
 //  deployToStorage("playerTwoWins",0)
+let dragged = null
+let temp = document.querySelectorAll(".cell")
+
+for(thing of temp){
+    thing.addEventListener("dragover",(event) =>{
+        event.preventDefault()
+    })
+    thing.addEventListener("dragstart", (event) =>{
+        dragged = event.target
+    })
+    thing.addEventListener("drop", (event) => {
+        if( event.target !== dragged){
+           
+            let sourceStyle = window.getComputedStyle(dragged)
+            let targetStyle = window.getComputedStyle(event.target)
+            let targetIntermediateStyle = handleSwapStyle(["background-color","border-left-width","border-right-width","border-top-width","border-bottom-width"],sourceStyle,targetStyle)
+            let sourceIntermediateStyle = handleSwapStyle(["border-left-width","border-right-width","border-top-width","border-bottom-width"],targetStyle,sourceStyle)
+            event.target.style.cssText = targetIntermediateStyle
+            dragged.style.cssText = sourceIntermediateStyle
+           
+            
+            
+            // todo: call move validation / change turn logic
+        }
+    })
+}
+
+const handleSwapStyle = (filterArray,sourceItem,targetItem) => {
+    let filteredStyleString = ""
+    let initialStyleArray = Array.from(sourceItem)
+    let filteredSyleArray = initialStyleArray.filter((element) =>{
+        if(filterArray.includes(element)){
+            filteredStyleString = `${filteredStyleString}${element}:${targetItem.getPropertyValue(element)};`
+            return
+        }else{
+            return element
+        }
+    })
+    let outputString = filteredSyleArray.reduce((str, property)=>{
+        return `${str}${property}:${sourceItem.getPropertyValue(property)};` 
+    })
+    return outputString + filteredStyleString 
+}
+    
+
 
