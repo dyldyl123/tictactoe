@@ -52,9 +52,9 @@ sl.addEventListener("click", (event) =>{
     if(event.target.checked){
         aiModeFlag = "1"
     } else { 
-        aiModeFlag = "0" 
+        aiModeFlag = "2" 
     }
-    console.log(aiModeFlag)
+    resetGame()
 })
 
 
@@ -83,9 +83,11 @@ let currentTurnTimeHandler = setInterval(() => {
     turnTimeElement.textContent = currentTurnTime
     if(currentTurnTime >= INTERVAL ){ 
         if(aiModeFlag === "2"){
+            currentTurnComplain.textContent = `Your Turn Player ${playerTurn}`
             return
         }
         if(aiModeFlag === "1" && playerTurn === 1){
+            currentTurnComplain.textContent = `Your Turn Player ${playerTurn}`
             return
         }
         if(aiModeFlag === "1"){
@@ -258,7 +260,7 @@ const moveValidation = (marker,x,y) =>{
             }
         }
     }
-    if(moveCount === (Math.pow(GRID_SIZE, 2) - 1)){
+    if(moveCount === (Math.pow(GRID_SIZE, 2))){
         console.log("Draw Nerds")
         outcome = 3
         completeGame()
@@ -308,7 +310,7 @@ let currentCells = document.querySelectorAll(".cell")
     cell.textContent = ""
     cell.style.backgroundImage = ""
  }
-
+ reverseOverlay()
 }
 let drawGrid = (width, height) =>{
 
@@ -408,27 +410,28 @@ const completeGame = () => {
         playerOneWins = parseInt(playerOneWins) + 1
         playerOneWinElement.textContent = parseInt(playerOneWins) 
         deployToStorage("playerOneWins",parseInt(playerOneWins))
-        // resetGame()
+        popUpOverlay()
     }else if(outcome === 2){
         playerTwoWins = parseInt(playerTwoWins) + 1
         playerTwoWinElement.textContent = parseInt(playerTwoWins)
         deployToStorage("playerTwoWins",parseInt(playerTwoWins))
-        // resetGame()
+        popUpOverlay()
     }else if(outcome === 3){
-        // resetGame()
+        popUpOverlay()
     }
-    // TODO : add overlay here 
+    
 }
 
 
- initializeGame()
+initializeGame()
 
 inputHandler.addEventListener("input", (event) => {
     let element = event.target 
     uploadTile(element)
 })
 
-// deployToStorage("playerOneWins",0)
+//  deployToStorage("playerOneWins",0)
+//  deployToStorage("playerTwoWins",0)
 
 
 /* Set the width of the side navigation to 250px */
@@ -437,8 +440,27 @@ function openNav() {
   }
   
   /* Set the width of the side navigation to 0 */
-  function closeNav() {
+function closeNav() {
     document.getElementById("mySidenav").style.width = "0";
-  }
+}
 
+const popUpOverlay = () =>{
+    let overlayElement = document.querySelector(".overlay")
+    let winningTextElement = document.querySelector(".winning-text")
+    overlayElement.style.opacity = "1"
+    overlayElement.style.zIndex = "1"
+    resetButton.style.zIndex = "2"
+    outcome === 1 ? winningTextElement.textContent = "Player 1 Wins" : outcome === 2 ? winningTextElement.textContent = "Player 2 Wins" : winningTextElement.textContent = "Draw"
+    winningTextElement.style.zIndex = "2"
+    winningTextElement.style.fontSize = "larger"
+}
 
+const reverseOverlay = () => {
+    let overlayElement = document.querySelector(".overlay")
+    let winningTextElement = document.querySelector(".winning-text")
+    overlayElement.style.opacity = "0"
+    overlayElement.style.zIndex = "-10"
+    resetButton.style.zIndex = "0" 
+    winningTextElement.style.zIndex = "-10"
+    winningTextElement.style.fontSize = "0"
+}
