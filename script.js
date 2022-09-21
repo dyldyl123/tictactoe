@@ -14,6 +14,8 @@ let playerTwoWinElement = document.querySelector(".player-two-wins")
 let sl = document.querySelector(".switch") 
 let p1image = document.querySelector("#player-one-profile") 
 let p2image = document.querySelector("#player-two-profile")
+let rangeSlider = document.querySelector("#range-slider")
+console.log(rangeSlider.value)
 
 /* GLOBALS */
 
@@ -44,7 +46,10 @@ if(ls.getItem("playerTwoWins") !== undefined){
     playerTwoWinElement.textContent = playerTwoWins
 }
 
-
+rangeSlider.addEventListener("input", (event) =>{
+    GRID_SIZE = event.target.value
+    initializeGame()
+})
 
 sl.addEventListener("click", (event) =>{
     console.log(event.target.checked)
