@@ -72,7 +72,14 @@ nav {
     display: block;
     transition: 0.3s;
   }
- 
+   /* The navigation menu links */
+   .sidenav span {
+    margin-left: 20px;
+    color: #8FE3CF;
+    
+    transition: 0.3s;
+  }
+
   /* When you mouse over the navigation links, change their color */
   .sidenav a:hover {
     color: #f1f1f1;
@@ -95,7 +102,7 @@ nav {
     width: 60px;
     height: 34px;
     left: 20px;
-    margin-top:  20px;
+    margin-top:  10px;
     
   }
   
@@ -211,4 +218,8 @@ nav {
 
   .cell:hover {
     background-color: rgb(1, 9, 35);
+  }
+
+  .slider-container {
+    margin-left: 20px
   }

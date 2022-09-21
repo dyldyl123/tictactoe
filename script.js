@@ -21,7 +21,7 @@ let rangeSlider = document.querySelector("#range-slider")
 
 let ls = localStorage
 let aiModeFlag = "2"
-let GRID_SIZE = 5
+let GRID_SIZE = 3
 let INTERVAL = 1
 let map = [];
 let moveCount = 0; 
@@ -66,30 +66,6 @@ const generateEventListener = (element) => {
        if(outcome !== 0){
         return
        }
-        // // modify background
-        // if(target.style.backgroundImage === ""){
-            
-        //     if(player1DataUrl !== undefined  && playerTurn === 1){
-                
-        //         target.style.backgroundImage = `url(${player1DataUrl})`
-        //         target.style.backgroundSize = "contain"
-                
-        //     }
-        //     else if(player2DataUrl !== undefined && playerTurn === 2){
-        //         target.style.backgroundImage = `url(${player2DataUrl})`
-        //         target.style.backgroundSize = "contain"
-        //     }else{
-        //         target.style.backgroundImage = `url('src/${playerTurn}.png')`
-        //     }
-            
-        //     target.textContent = `${playerTurn}`
-        //     moveCount += 1
-        //      // call moveValidation passing in targets dataset attributes    
-        //     moveValidation(playerTurn,target.dataset.column -1,target.parentElement.dataset.row -1)
-        // // change the turn 
-        //     playerTurn === 1 ? playerTurn = 2 : playerTurn = 1
-        //     currentTurnTime = 0
-        // }
        moveGameForward(target)
     })
 }
@@ -486,12 +462,10 @@ const moveGameForward = (element) => {
             }
         }    
         moveCount += 1
-        moveValidation(playerTurn,element.dataset.column -1,element.parentElement.dataset.row -1)
-        // change the turn 
+        moveValidation(playerTurn,element.dataset.column -1,element.parentElement.dataset.row -1) 
         playerTurn === 1 ? playerTurn = 2 : playerTurn = 1
         currentTurnTime = 0;
-        console.log(moveCount)
-
+        
 }
 
 const addDragListener = () =>{
