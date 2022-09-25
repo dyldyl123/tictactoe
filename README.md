@@ -36,6 +36,9 @@ Click on the side bar to open up additonal settings
    * TimedMode - rests the game and forces players to move within 20 seconds otherwise the move is played for them
    * Grid Size Slider - Increase / Decrease the size of the game board. This modifies how many of the same tile needs to be in a row to win
    * Load up images to modify the sliders for the relevant player
+   * Also includes swapping tiles as a move!
+   
+![Screen Shot 2022-09-26 at 9 10 49 am](https://user-images.githubusercontent.com/71204994/192169785-4494f92c-1f4e-423e-ae55-1e0759601b44.png)
 
 ### Planning Process
 
