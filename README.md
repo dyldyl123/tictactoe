@@ -39,3 +39,4 @@ Click on the side bar to open up additonal settings
 
 ### Planning Process
 
+[plan-tictactoe.docx](https://github.com/dyldyl123/tictactoe/files/9640914/plan-tictactoe.docx)
