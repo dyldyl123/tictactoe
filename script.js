@@ -15,12 +15,15 @@ let sl = document.querySelector(".switch")
 let p1image = document.querySelector("#player-one-profile") 
 let p2image = document.querySelector("#player-two-profile")
 let rangeSlider = document.querySelector("#range-slider")
+let sl2 = document.querySelector("#other")
+
 
 
 /* GLOBALS */
 
 let ls = localStorage
 let aiModeFlag = "2"
+let timedModeFlag = "2"
 let GRID_SIZE = 3
 let INTERVAL = 1
 let map = [];
@@ -46,12 +49,20 @@ rangeSlider.addEventListener("input", (event) =>{
 })
 
 sl.addEventListener("click", (event) =>{
-    console.log(event.target.checked)
-    console.log(event.target.id)
     if(event.target.checked){
         aiModeFlag = "1"
     } else { 
         aiModeFlag = "2" 
+    }
+    resetGame()
+})
+
+sl2.addEventListener("click", (event) =>{
+    if(event.target.checked){
+        
+        timedModeFlag = "1"
+    } else { 
+        timedModeFlag = "2" 
     }
     resetGame()
 })
@@ -64,6 +75,9 @@ const generateEventListener = (element) => {
              
         }
        if(outcome !== 0){
+        return
+       }
+       if(target.textContent !== ""){
         return
        }
        moveGameForward(target)
@@ -100,11 +114,11 @@ let currentTurnTimeHandler = setInterval(() => {
     currentTurnTime +=1;
     turnTimeElement.textContent = currentTurnTime
     if(currentTurnTime >= INTERVAL ){ 
-        if(aiModeFlag === "2"){
+        if(aiModeFlag === "2" && timedModeFlag === "2"){ // ai is turned off and timed mode not on
             currentTurnComplain.textContent = `Your Turn Player ${playerTurn}`
             return
         }
-        if(aiModeFlag === "1" && playerTurn === 1){
+        if(aiModeFlag === "1" && playerTurn === 1 && timedModeFlag === "2"){ // ai is on but its players ones turn and they have unlimited time
             currentTurnComplain.textContent = `Your Turn Player ${playerTurn}`
             return
         }
@@ -285,8 +299,38 @@ const moveValidation = (marker,x,y) =>{
 
      
     createMap();
+
+    // check if we have filled everything with 1's and 2's
+    let bool = true;
+    map.forEach((element) => {
+        if(containsOnly(['1','2'],element) === false){
+            bool = false
+        }
+    })
     
+
+    
+    // let temporaryArray = [];
+    // map.forEach((element)=> {
+    //     let subArray = [];
+    //     element.forEach( (subElement) => {
+    //         if(subElement === "1"){
+    //             subArray.push(1)
+    //         }else{
+    //             subArray.push(0)
+    //         }
+    //     })
+    //     temporaryArray.push(subArray)
+        
      
+    // })
+    // console.log(temporaryArray)   
+    // let temp = largestIsland(temporaryArray,[[1,0], [-1,0]/*, [0,1], [0,-1]*/],1)
+    // let temp2 = largestIsland(temporaryArray,[[0,1],[0,-1]],1)
+    // console.log(temp)
+    // console.log(temp2)
+
+
     for(let i = 0; i < GRID_SIZE; i++){
         if(map[x][i] != marker){
             break;
@@ -337,8 +381,9 @@ const moveValidation = (marker,x,y) =>{
             }
         }
     }
-    
-    if(moveCount === (Math.pow(GRID_SIZE, 2))){
+  
+   
+    if(bool === true){
         console.log("Draw Nerds")
         outcome = 3
         completeGame()
@@ -520,7 +565,9 @@ const handleSwapStyle = (filterArray,sourceItem,targetItem) => {
     return outputString + filteredStyleString 
 }
     
-
+const containsOnly = (array1,array2) =>{
+    return array2.every(elem => array1.includes(elem))
+}
 
 initializeGame()
 generateEventListener(gameArea)
@@ -530,3 +577,80 @@ addDragListener()
 //  deployToStorage("playerTwoWins",0)
 
 
+// const DIRECTIONS = [[1,0], [-1,0]/*, [0,1], [0,-1]*/];
+
+// function largestIsland(grid,DIRECTIONS,SETTING) {
+//     if (!grid || !grid.length) return 0;
+
+//     const m = grid.length;
+//     const n = grid[0].length;
+//     let max = Number.MIN_VALUE;
+//     let count = 2;
+//     let map = {};
+
+//     for (let i = 0; i < m; i++) {
+//         for (let j = 0; j < n; j++) {
+//             if (grid[i][j] === 1) {
+//                 // mark the island
+//                 if(SETTING === 1){
+//                     const area = dfsRow(grid, i, j, count)
+//                     max = Math.max(max, area);
+//                     map[count] = area;
+//                     count++;
+//                 }else{
+//                     const area = dfsColumn(grid, i, j, count);
+//                     max = Math.max(max, area);
+//                     map[count] = area;
+//                     count++;
+//                 }
+                
+               
+//             }
+//         }
+//     }
+
+//     for (let i = 0; i < m; i++) {
+//         for (let j = 0; j < n; j++) {
+//             if (grid[i][j] === 0) {
+//                 let set = new Set();
+//                 let cur = 1;
+
+//                 // visit it's neighbors
+//                 for (let [row, col] of DIRECTIONS) {
+//                     const x = row + i;
+//                     const y = col + j;
+
+//                     // bound check
+//                     if (x < 0 || x >= m || y < 0 || y >= n) continue;
+
+//                     const islandId = grid[x][y];
+//                     if (islandId > 1 && !set.has(islandId)) {
+//                         set.add(islandId);
+//                         cur += map[islandId];
+//                     }
+//                 }
+//                 max = Math.max(max, cur);
+//             }
+//         }
+//     }
+//     console.log(map)
+//     return max;
+// }
+
+// function dfsRow(grid, row, col, num) {
+//     // bound check
+//     if (row < 0 || row >= grid.length || col < 0 || col >= grid[0].length) return 0;
+//     if (grid[row][col] === 0 || grid[row][col] === num) return 0;
+
+//     grid[row][col] = num;
+//     return 1 + dfsRow(grid, row + 1, col, num) + dfsRow(grid, row - 1, col, num) 
+// }
+
+// function dfsColumn(grid, row, col, num) {
+//     // bound check
+//     if (row < 0 || row >= grid.length || col < 0 || col >= grid[0].length) return 0;
+//     if (grid[row][col] === 0 || grid[row][col] === num) return 0;
+
+//     grid[row][col] = num;
+//     return 1 + dfsColumn(grid, row, col + 1, num) + dfsColumn(grid, row, col - 1, num);
+// }
